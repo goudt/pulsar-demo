@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  pulsar:
+    image: apachepulsar/pulsar:latest
+    container_name: pulsar
+    ports:
+      - "6650:6650"   # Pulsar broker
+      - "8090:8080"   # HTTP Admin Interface
+    volumes:
+      - ./init-scripts:/pulsar/init-scripts
+    environment:
+      PULSAR_MEM: "-Xms512m -Xmx512m -XX:MaxDirectMemorySize=1g"
+    entrypoint: /bin/bash
+    command: >
+      -c "bin/pulsar standalone &
+          sleep 20 &&
+          bin/pulsar-admin topics create persistent://public/default/booking-topic &&
+          wait"
+
+volumes:
+  pulsar-data:
+  pulsar-conf:
+
+
